@@ -101,7 +101,7 @@ Here is a schematic of the front-end of this oscilloscope. None of the capacitor
 Transistors are part of the optocouplers. The paired transistors are the same optocouplers,
 but they are driven at the same time (LEDs on the other side are in series).
 
-![FNIRSI-5012H Front-end]:(doc/frontend.jpg?raw=true "FNIRSI-5012H Front-end")
+![FNIRSI-5012H Front-end]:(frontend.jpg)
 
 ## GD32F407VET6 Pinout
 
