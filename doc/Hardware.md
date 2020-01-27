@@ -101,13 +101,14 @@ Here is a schematic of the front-end of this oscilloscope. None of the capacitor
 Transistors are part of the optocouplers. The paired transistors are the same optocouplers,
 but they are driven at the same time (LEDs on the other side are in series).
 
-![FNIRSI-5012H Front-end]:(doc/frontend.jpg)
+![FNIRSI-5012H Front-end]:(doc/frontend.jpg?raw=true "FNIRSI-5012H Front-end")
 
 ## GD32F407VET6 Pinout
 
 And finally, the full pinout of the MCU.
 
 ADC
+
 | Pin  | Function   |
 |:----:|:-----------|
 | PD0  | ADC B D0   |
@@ -130,6 +131,7 @@ ADC
 | PA9  | ADC B CLK  |
 
 LCD
+
 | Pin  | Function   |
 |:----:|:-----------|
 | PC6  | LCD_RESET  |
@@ -148,6 +150,7 @@ LCD
 | PB0  | LCD_BL_EN  |
 
 Vertical Controls
+
 | Pin  | Function   |
 |:----:|:-----------|
 | PB9  | Q0         |
@@ -161,6 +164,7 @@ Vertical Controls
 | PA4  | Offset (DAC output) |
 
 Keyboard
+
 | Pin  | Function   |
 |:----:|:-----------|
 | PE13 | PE0.A0     |
@@ -175,6 +179,7 @@ Keyboard
 | PE11 | BTN_F2     |
 
 Flash
+
 | Pin  | Function   |
 |:----:|:-----------|
 | PA3  | FLASH_CS   |
@@ -183,6 +188,7 @@ Flash
 | PA7  | FLASH_MOSI |
 
 Miscellaneous
+
 | Pin  | Function   |
 |:----:|:-----------|
 | PB15 | CHARGE     |
