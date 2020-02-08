@@ -24,6 +24,8 @@ New GD32F407VET6 are available for $5 from LCSC.
 Programming pins are available on the USB connector. There are no other dedicated
 test points or connectors on the board, so making an adapter is the best way to go.
 
+Details of the programmer connections are [here](doc/Programming.md).
+
 ## Keyboard
 
 Some buttons have multiple functions assigned to them. **1X10X** button is used
