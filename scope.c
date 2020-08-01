@@ -741,6 +741,8 @@ static void change_vertical_scale(int delta)
   config.vertical_mult = config.calib_vs_mult[config.vertical_scale];
   config.vertical_position_mv = config.vertical_position * vs_px_value[config.vertical_scale];
 
+  config.trigger_level_mv = config.trigger_level * vs_px_value[config.vertical_scale];
+
   capture_set_vertical_parameters();
   capture_set_trigger_level(config.trigger_level_mv);
   draw_vertical_scale();
