@@ -43,6 +43,7 @@ typedef struct
   int      min_value;
   int      max_value;
   int      vertical_position;
+  int      frequency;
   int      min[DATA_BUFFER_SIZE];
   int      max[DATA_BUFFER_SIZE];
   uint8_t  flags[DATA_BUFFER_SIZE];

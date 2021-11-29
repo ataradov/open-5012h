@@ -289,9 +289,11 @@ void config_reset(void)
 
   config.sample_rate_limit      = 0;
 
+  config.measure_display        = false;
+
   for (int i = 0; i < ARRAY_SIZE(config.padding); i++)
     config.padding[i] = 0;
-  
+
   config.calib_channel_delta    = -5;
   config.calib_dac_zero         = 2010;
 

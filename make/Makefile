@@ -87,5 +87,8 @@ clean:
 	@echo clean
 	@-rm -rf $(BUILD)
 
+prog:
+	@edbg -b -c 3000 -t gd32f4xx -pv -f $(BUILD)/$(BIN).bin
+
 -include $(wildcard $(BUILD)/*.d)
 

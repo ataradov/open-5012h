@@ -70,7 +70,9 @@ typedef struct
 
   int      sample_rate_limit;
 
-  uint32_t padding[32];
+  bool     measure_display;
+
+  uint32_t padding[31];
 
   int      calib_channel_delta;
   int      calib_dac_zero;

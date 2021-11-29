@@ -64,6 +64,8 @@ HAL_GPIO_PIN(AC_DC,    C, 15)
 
 #define ZERO_POINT             0x80
 
+#define MEASURE_HYSTERESIS     3
+
 /*- Types -------------------------------------------------------------------*/
 typedef struct
 {
@@ -200,7 +202,7 @@ static void set_vertical_scale(void)
 
   if (VS_50_mV == scale)
     scale = VS_100_mV;
-  
+
   if (scale == set_scale)
     return;
 
@@ -830,6 +832,56 @@ static bool find_min_max(BufferInfo *info, int index0, int index1, int *vmin, in
 }
 
 //---------------------------------------------------------------------
+static int calc_frequency(BufferInfo *info)
+{
+  int pn, pa, pb, level, index;
+  bool low;
+
+  if (!config.measure_display)
+    return 0;
+
+  index = info->offset;
+  low = (info->data[index] < g_trigger_level);
+  level = g_trigger_level + (low ? MEASURE_HYSTERESIS : -MEASURE_HYSTERESIS);
+  pn = 0;
+
+  for (int i = 0; i < info->size; i++)
+  {
+    bool toggle = (low && (info->data[index] > level)) || (!low && (info->data[index] < level));
+
+    if (toggle)
+    {
+      if (low)
+      {
+        if (pn == 0)
+          pa = i;
+        else
+          pb = i;
+
+        pn++;
+        low = false;
+        level = g_trigger_level - MEASURE_HYSTERESIS;
+      }
+      else
+      {
+        low = true;
+        level = g_trigger_level + MEASURE_HYSTERESIS;
+      }
+    }
+
+    index++;
+
+    if (index == info->size)
+      index = 0;
+  }
+
+  if (pn < 2)
+    return 0;
+
+  return ((uint64_t)(pn-1) * (uint64_t)1e9) / ((pb - pa) * info->period);
+}
+
+//---------------------------------------------------------------------
 void capture_get_data(DataBuffer *db)
 {
   BufferInfo *capture_info = (BufferInfo *)&g_capture_buffer_info;
@@ -922,7 +974,7 @@ void capture_get_data(DataBuffer *db)
 
     if (min_value == 0)
       flags |= SAMPLE_FLAG_CLIP_L;
-      
+
     if (max_value == 255)
       flags |= SAMPLE_FLAG_CLIP_H;
 
@@ -945,6 +997,8 @@ void capture_get_data(DataBuffer *db)
     index = next_index;
     error = next_error;
   }
+
+  db->frequency = calc_frequency(info);
 
   g_storage_buffer_info.valid = false;
 }

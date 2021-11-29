@@ -37,6 +37,7 @@ In the oscilloscope mode the buttons have the following functions:
 | Button | Function |
 |:---:|:---|
 | **AC/DC** | Select AC or DC Coupling |
+| **MODE** | Select Measurement or Trigger Parameters Display Mode |
 | **STOP** | Start, Stop or Retrigger Capture |
 | **EDGE** | Select Trigger Edge |
 | **TRIG** | Select Trigger Mode (Normal, Auto, Single) |
@@ -53,7 +54,7 @@ In the oscilloscope mode the buttons have the following functions:
 
 Your hardware will require calibration. The default calibration values are
 the values from my development device, so they will definitely not work for
-any other device. 
+any other device.
 
 The calibration mode is entered by holding **SHIFT** + **MODE** while powering on
 the device,

@@ -87,6 +87,10 @@
 #define TRIGGER_LEVEL_COLOR    LCD_COLOR(50, 255, 255)
 #define TRIGGER_MODE_COLOR     LCD_COLOR(0, 255, 0)
 
+#define MEASURE_MODE_COLOR     LCD_COLOR(50, 255, 255)
+#define MEASURE_VOLTAGE_COLOR  LCD_COLOR(255, 255, 0)
+#define MEASURE_FREQ_COLOR     LCD_COLOR(255, 255, 255)
+
 #define CAPTURE_STOP_COLOR     LCD_COLOR(255, 0, 0)
 #define CAPTURE_WAIT_COLOR     LCD_COLOR(255, 180, 50)
 #define CAPTURE_TRIG_COLOR     LCD_COLOR(0, 255, 0)
@@ -102,6 +106,8 @@
 
 #define MIN_VERTICAL_POSITION  (-10 * GRID_DIV_PX)
 #define MAX_VERTICAL_POSITION  ( 10 * GRID_DIV_PX)
+
+#define MEASURE_UPDATE_TIMEOUT 100
 
 enum
 {
@@ -178,6 +184,8 @@ static int g_state_timer = TIMER_DISABLE;
 static bool g_calibration_mode = false;
 static bool g_calibration_dual_channel = false;
 static int g_calibration_parameter = CALIB_ZERO;
+
+static int g_measure_timer = TIMER_DISABLE;
 
 /*- Implementations ---------------------------------------------------------*/
 
@@ -377,7 +385,7 @@ static void draw_horizontal_position(void)
 {
   char *str;
 
-  if (g_toast_active || g_calibration_mode)
+  if (g_toast_active || g_calibration_mode || config.measure_display)
     return;
 
   str = format_time(config.horizontal_position, true);
@@ -434,7 +442,7 @@ static void draw_trigger_level(void)
   lcd_draw_image(GRID_RIGHT+2, GRID_CENTER_Y - config.trigger_level,
       &image_trigger_level);
 
-  if (g_toast_active || g_calibration_mode)
+  if (g_toast_active || g_calibration_mode || config.measure_display)
     return;
 
   str = format_voltage(config.trigger_level_mv - config.vertical_position_mv, true);
@@ -445,7 +453,7 @@ static void draw_trigger_level(void)
 //-----------------------------------------------------------------------------
 static void draw_trigger_edge(void)
 {
-  if (g_toast_active || g_calibration_mode)
+  if (g_toast_active || g_calibration_mode || config.measure_display)
     return;
 
   if (TRIGGER_EDGE_RISE == config.trigger_edge)
@@ -470,6 +478,35 @@ static void draw_trigger_mode(void)
 
   lcd_set_color(BG_COLOR, TRIGGER_MODE_COLOR);
   lcd_puts(10, 4, str);
+}
+
+//-----------------------------------------------------------------------------
+static void draw_measure(void)
+{
+  int vmin, vmax, vpp;
+  char *str;
+
+  if (g_toast_active || g_calibration_mode || !config.measure_display)
+    return;
+
+  vmin = g_data_buffer.min_value;
+  vmax = g_data_buffer.max_value;
+
+  if (vmax > 0 && vmin < 0)
+    vpp = vmax - vmin;
+  else
+    vpp = vmax - vmin;
+
+  lcd_set_color(BG_COLOR, MEASURE_MODE_COLOR);
+  lcd_putc(140, STATUS_LINE_Y, 'M');
+
+  str = format_voltage(vpp, false);
+  lcd_set_color(BG_COLOR, MEASURE_VOLTAGE_COLOR);
+  lcd_puts(148, STATUS_LINE_Y, str);
+
+  str = format_frequency(g_data_buffer.frequency);
+  lcd_set_color(BG_COLOR, MEASURE_FREQ_COLOR);
+  lcd_puts(236, STATUS_LINE_Y, str);
 }
 
 //-----------------------------------------------------------------------------
@@ -937,6 +974,7 @@ static void draw_status_line(void)
   draw_horizontal_position();
   draw_trigger_level();
   draw_trigger_edge();
+  draw_measure();
 }
 
 //-----------------------------------------------------------------------------
@@ -1050,6 +1088,13 @@ void scope_buttons_handler(int buttons)
     draw_ac_dc();
   }
 
+  else if (buttons & BTN_MODE)
+  {
+    config.measure_display = !config.measure_display;
+    g_measure_timer = config.measure_display ? MEASURE_UPDATE_TIMEOUT : TIMER_DISABLE;
+    draw_status_line();
+  }
+
   else if (buttons & BTN_SAVE)
   {
   }
@@ -1094,6 +1139,9 @@ void scope_init(bool calibration_mode)
 
   timer_add(&g_toast_timer);
   timer_add(&g_state_timer);
+  timer_add(&g_measure_timer);
+
+  g_measure_timer = config.measure_display ? MEASURE_UPDATE_TIMEOUT : TIMER_DISABLE;
 
   update_sample_rate();
   capture_set_vertical_parameters();
@@ -1141,6 +1189,15 @@ void scope_task(void)
       g_toast_timer = TIMER_DISABLE;
       g_toast_active = false;
       draw_status_line();
+    }
+  }
+
+  if (config.measure_display)
+  {
+    if (g_measure_timer == 0)
+    {
+      g_measure_timer = MEASURE_UPDATE_TIMEOUT;
+      draw_measure();
     }
   }
 }
