@@ -74,7 +74,7 @@ static void sys_init(void)
   RCU->CTL_b.PLLEN = 1;
   while (0 == RCU->CTL_b.PLLSTB);
 
-  RCU->CFG0 = (2/*CK_PLLP*/ << RCU_CFG0_SCS_Pos) | (0/*CK_SYS*/ << RCU_CFG0_AHBPSC_Pos) | 
+  RCU->CFG0 = (2/*CK_PLLP*/ << RCU_CFG0_SCS_Pos) | (0/*CK_SYS*/ << RCU_CFG0_AHBPSC_Pos) |
       (5/*DIV 4*/ << RCU_CFG0_APB1PSC_Pos) | (4/*DIV 2*/ << RCU_CFG0_APB2PSC_Pos) |
       (0 << RCU_CFG0_RTCDIV_Pos);
   while (RCU->CFG0_b.SCSS != 2);
@@ -111,7 +111,7 @@ void irq_handler_hard_fault_c(uint32_t lr, uint32_t msp, uint32_t psp)
   s_lr  = sp[5];
   s_pc  = sp[6];
   s_psr = sp[7];
-  
+
   r_CFSR = SCB->CFSR;  // Configurable Fault Status Register (MMSR, BFSR and UFSR)
   r_HFSR = SCB->HFSR;  // Hard Fault Status Register
   r_DFSR = SCB->DFSR;  // Debug Fault Status Register
@@ -211,7 +211,7 @@ int main(void)
   timer_init();
   lcd_init();
   crc32_init();
-  flash_init();
+  //flash_init();
   config_init();
   buttons_init();
   battery_init();
